@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#101827" />
+  <title>Exam Result Predictor</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f4f6fb;
+      --surface: #ffffff;
+      --surface-soft: #f8faff;
+      --ink: #172033;
+      --muted: #68748a;
+      --line: #e5eaf3;
+      --brand: #6558e8;
+      --brand-dark: #5144d4;
+      --brand-soft: #efedff;
+      --green: #15845d;
+      --green-soft: #e8f8f0;
+      --amber: #a76508;
+      --amber-soft: #fff4dc;
+      --red: #bf3c4b;
+      --red-soft: #fff0f1;
+      --shadow: 0 18px 48px rgba(27, 38, 70, .07);
+      --radius: 20px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font: 15px/1.5 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    .page { width: min(1120px, calc(100% - 32px)); margin: 0 auto; padding: 26px 0 40px; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+    .brand { display: flex; align-items: center; gap: 12px; font-weight: 800; letter-spacing: -.03em; font-size: 18px; }
+    .logo { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 13px; color: white; background: linear-gradient(135deg, #8175ff, #5144d4); box-shadow: 0 8px 20px rgba(101, 88, 232, .28); }
+    .logo svg { width: 23px; height: 23px; }
+    .local-tag { display: inline-flex; align-items: center; gap: 7px; color: #516078; background: #fff; border: 1px solid var(--line); border-radius: 999px; padding: 8px 12px; font-size: 12px; font-weight: 700; }
+    .local-tag span { width: 7px; height: 7px; background: #20a774; border-radius: 50%; }
+    .hero { position: relative; overflow: hidden; padding: clamp(24px, 5vw, 44px); color: white; border-radius: 26px; background: radial-gradient(circle at 82% 5%, rgba(135, 125, 255, .45), transparent 30%), linear-gradient(120deg, #17223a, #28205d 72%, #4237a0); box-shadow: var(--shadow); }
+    .hero::after { content: ""; position: absolute; width: 250px; height: 250px; right: -75px; bottom: -130px; border: 1px solid rgba(255,255,255,.12); border-radius: 50%; box-shadow: 0 0 0 28px rgba(255,255,255,.025), 0 0 0 58px rgba(255,255,255,.02); pointer-events: none; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 8px; color: #c9c5ff; font-size: 12px; letter-spacing: .12em; font-weight: 800; text-transform: uppercase; }
+    .eyebrow::before { content: ""; width: 22px; height: 2px; background: #aaa3ff; border-radius: 9px; }
+    h1 { font-size: clamp(29px, 5vw, 46px); line-height: 1.08; letter-spacing: -.045em; max-width: 620px; margin: 15px 0 14px; }
+    .hero p { max-width: 650px; margin: 0; color: #d8dcf1; font-size: 15px; }
+    .hero-note { display: inline-flex; align-items: center; gap: 8px; margin-top: 24px; padding: 9px 12px; border: 1px solid rgba(255,255,255,.17); background: rgba(255,255,255,.08); border-radius: 10px; color: #f0efff; font-size: 12px; }
+    .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin: 30px 0 14px; }
+    .section-heading h2 { margin: 0; font-size: 20px; letter-spacing: -.025em; }
+    .section-heading p { margin: 5px 0 0; color: var(--muted); font-size: 13px; }
+    .settings { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 13px; }
+    .setting, .panel, .metric { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
+    .setting { padding: 16px; }
+    .setting label { display: block; color: var(--muted); font-size: 12px; font-weight: 700; margin-bottom: 9px; }
+    .setting .input-wrap { display: flex; align-items: center; gap: 8px; }
+    .setting input { width: 100%; min-width: 0; border: 0; outline: none; color: var(--ink); font-size: 22px; font-weight: 800; letter-spacing: -.03em; background: transparent; }
+    .setting .suffix { color: #8590a3; font-weight: 700; font-size: 12px; }
+    .setting:focus-within { border-color: #aaa3ff; box-shadow: 0 0 0 3px rgba(101,88,232,.08); }
+    .workspace { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(260px, .8fr); gap: 18px; align-items: start; }
+    .panel { padding: 22px; box-shadow: 0 8px 26px rgba(27,38,70,.035); }
+    .panel-title { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 20px; }
+    .panel-title h3 { margin: 0; font-size: 17px; letter-spacing: -.02em; }
+    .panel-title p { margin: 4px 0 0; font-size: 12px; color: var(--muted); }
+    .count { flex: 0 0 auto; display: inline-grid; place-items: center; min-width: 32px; height: 32px; padding: 0 9px; border-radius: 10px; background: var(--brand-soft); color: var(--brand); font-weight: 800; font-size: 12px; }
+    .subject-list { display: grid; gap: 10px; }
+    .subject-row { display: grid; grid-template-columns: minmax(120px, 1.25fr) minmax(80px, .7fr) minmax(80px, .7fr) 36px; gap: 10px; align-items: end; padding: 13px; border: 1px solid var(--line); background: var(--surface-soft); border-radius: 14px; }
+    .field label { display: block; color: var(--muted); font-size: 11px; font-weight: 700; margin: 0 0 6px 2px; }
+    .field input { width: 100%; min-width: 0; height: 42px; padding: 0 11px; border: 1px solid #e1e6f0; border-radius: 9px; outline: none; color: var(--ink); background: #fff; }
+    .field input:focus { border-color: var(--brand); box-shadow: 0 0 0 3px rgba(101,88,232,.1); }
+    .field input[type="number"] { font-variant-numeric: tabular-nums; }
+    .remove-btn { display: grid; place-items: center; width: 36px; height: 42px; border: 1px solid #e7eaf2; border-radius: 9px; background: #fff; color: #8993a6; }
+    .remove-btn:hover { color: var(--red); border-color: #ffc6cc; background: var(--red-soft); }
+    .remove-btn svg { width: 16px; height: 16px; }
+    .actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 15px; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 43px; padding: 0 16px; border-radius: 11px; border: 1px solid transparent; font-weight: 750; font-size: 13px; transition: transform .15s ease, background .15s ease; }
+    .btn:active { transform: translateY(1px); }
+    .btn svg { width: 16px; height: 16px; }
+    .btn-primary { color: #fff; background: var(--brand); box-shadow: 0 7px 14px rgba(101,88,232,.18); }
+    .btn-primary:hover { background: var(--brand-dark); }
+    .btn-secondary { color: #46516a; background: #fff; border-color: var(--line); }
+    .btn-secondary:hover { background: #f6f7fc; }
+    .btn-plain { color: var(--brand); background: transparent; padding-left: 7px; padding-right: 7px; }
+    .hint { display: flex; align-items: flex-start; gap: 9px; padding: 12px 13px; margin-top: 17px; color: #68748a; background: #f6f7fd; border-radius: 11px; font-size: 12px; }
+    .hint svg { width: 16px; height: 16px; flex: 0 0 auto; margin-top: 1px; color: var(--brand); }
+    .results-panel { position: sticky; top: 16px; }
+    .results-placeholder { display: grid; place-items: center; padding: 28px 12px 18px; text-align: center; }
+    .placeholder-icon { display: grid; place-items: center; width: 66px; height: 66px; color: var(--brand); background: var(--brand-soft); border-radius: 20px; margin-bottom: 14px; }
+    .placeholder-icon svg { width: 30px; height: 30px; }
+    .results-placeholder h4 { margin: 0; font-size: 16px; }
+    .results-placeholder p { max-width: 240px; margin: 8px 0 0; color: var(--muted); font-size: 12px; }
+    .results-content[hidden], .results-placeholder[hidden] { display: none; }
+    .overall { padding: 17px; border-radius: 15px; background: linear-gradient(135deg, #f1efff, #f8f7ff); border: 1px solid #e7e3ff; }
+    .overall-top { display: flex; justify-content: space-between; align-items: start; gap: 10px; }
+    .small-label { color: #77759b; text-transform: uppercase; font-size: 10px; font-weight: 800; letter-spacing: .1em; }
+    .percentage { font-size: 40px; line-height: 1.1; margin: 7px 0 5px; letter-spacing: -.05em; font-weight: 850; color: #29215f; font-variant-numeric: tabular-nums; }
+    .total-line { color: #666384; font-size: 12px; }
+    .status-pill { display: inline-flex; align-items: center; gap: 5px; border-radius: 999px; padding: 7px 9px; font-size: 10px; line-height: 1.1; font-weight: 850; white-space: nowrap; }
+    .status-pill.pass { color: var(--green); background: var(--green-soft); }
+    .status-pill.caution { color: var(--amber); background: var(--amber-soft); }
+    .status-pill.fail { color: var(--red); background: var(--red-soft); }
+    .metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+    .metric { border-radius: 13px; padding: 13px; }
+    .metric .metric-label { font-size: 11px; color: var(--muted); font-weight: 650; }
+    .metric .metric-value { margin-top: 5px; font-size: 21px; font-weight: 850; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+    .metric .metric-sub { font-size: 10px; color: #8a94a6; margin-top: 2px; }
+    .grade-strip { margin-top: 14px; padding: 13px; display: flex; align-items: center; justify-content: space-between; gap: 12px; background: #fff; border: 1px solid var(--line); border-radius: 13px; }
+    .grade-strip .label { color: var(--muted); font-size: 12px; }
+    .grade { color: var(--brand); font-weight: 900; font-size: 23px; letter-spacing: -.04em; }
+    .breakdown { margin-top: 22px; }
+    .breakdown h4 { margin: 0 0 13px; font-size: 13px; }
+    .subject-result { padding: 11px 0; border-top: 1px solid var(--line); }
+    .subject-result-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+    .subject-result-name { min-width: 0; font-size: 12px; font-weight: 750; overflow-wrap: anywhere; }
+    .subject-result-score { color: #3b4660; font-size: 11px; font-weight: 800; white-space: nowrap; }
+    .track { height: 6px; overflow: hidden; background: #edf0f7; border-radius: 99px; }
+    .track-fill { height: 100%; border-radius: inherit; background: linear-gradient(90deg, #8276ff, #5d4ce0); }
+    .track-fill.risk { background: #e3a33c; }
+    .track-fill.fail { background: #e66c79; }
+    .subject-result-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 7px; color: var(--muted); font-size: 10px; }
+    .result-actions { display: flex; gap: 8px; margin-top: 16px; }
+    .result-actions .btn { flex: 1; padding: 0 10px; }
+    .message { display: none; margin: 0 0 16px; padding: 11px 13px; border-radius: 10px; color: #863d05; background: #fff4dc; border: 1px solid #f8e3b2; font-size: 12px; }
+    .message.show { display: block; }
+    .footer { display: flex; justify-content: space-between; gap: 15px; margin-top: 24px; color: #8a94a6; font-size: 11px; }
+    .footer strong { color: #59657a; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+    @media (max-width: 880px) {
+      .workspace { grid-template-columns: 1fr; }
+      .results-panel { position: static; }
+      .settings { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 560px) {
+      .page { width: min(100% - 20px, 1120px); padding-top: 15px; }
+      .topbar { margin-bottom: 16px; }
+      .brand { font-size: 16px; }
+      .logo { width: 38px; height: 38px; }
+      .local-tag { font-size: 10px; padding: 7px 9px; }
+      .hero { border-radius: 20px; padding: 24px 20px; }
+      .hero p { font-size: 13px; }
+      .section-heading { margin-top: 23px; }
+      .section-heading h2 { font-size: 18px; }
+      .settings { gap: 9px; }
+      .setting { padding: 13px; border-radius: 14px; }
+      .setting input { font-size: 20px; }
+      .panel { padding: 15px; border-radius: 16px; }
+      .subject-row { grid-template-columns: minmax(0, 1fr) minmax(0, .8fr) minmax(0, .8fr) 32px; gap: 7px; padding: 9px; }
+      .field label { font-size: 10px; }
+      .field input { padding: 0 7px; height: 40px; font-size: 13px; }
+      .remove-btn { width: 32px; height: 40px; }
+      .actions .btn-primary { flex: 1 1 100%; }
+      .footer { flex-direction: column; }
+    }
+    @media print {
+      body { background: #fff; }
+      .page { width: 100%; padding: 0; }
+      .hero { padding: 22px; box-shadow: none; print-color-adjust: exact; }
+      .settings, .subject-panel, .topbar .local-tag, .footer .privacy, .result-actions { display: none !important; }
+      .workspace { display: block; }
+      .results-panel { position: static; margin-top: 20px; box-shadow: none; }
+      .results-placeholder { display: none !important; }
+      .results-content[hidden] { display: block !important; }
+      .panel { box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5"/><path d="M4 19h16"/><path d="m7 15 4-4 3 2 5-7"/><path d="M15 6h4v4"/></svg>
+        </div>
+        <span>GradePilot</span>
+      </div>
+      <div class="local-tag"><span></span> Runs on your device</div>
+    </header>
+
+    <section class="hero" aria-labelledby="page-title">
+      <div class="eyebrow">Your academic planner</div>
+      <h1 id="page-title">A clearer picture of your exam result.</h1>
+      <p>Enter your internal marks and expected exam marks to estimate your subject totals, percentage, grade, and subjects that may need attention.</p>
+      <div class="hero-note">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+        Your marks stay in this page; nothing is uploaded.
+      </div>
+    </section>
+
+    <section aria-labelledby="rules-title">
+      <div class="section-heading">
+        <div><h2 id="rules-title">Set your exam rules</h2><p>Change these values to match your college or university.</p></div>
+      </div>
+      <div class="settings">
+        <div class="setting"><label for="internalMax">Internal maximum</label><div class="input-wrap"><input id="internalMax" type="number" min="1" max="1000" value="20" inputmode="decimal"><span class="suffix">marks</span></div></div>
+        <div class="setting"><label for="examMax">Exam maximum</label><div class="input-wrap"><input id="examMax" type="number" min="1" max="1000" value="80" inputmode="decimal"><span class="suffix">marks</span></div></div>
+        <div class="setting"><label for="passPercent">Overall pass mark</label><div class="input-wrap"><input id="passPercent" type="number" min="0" max="100" value="40" inputmode="decimal"><span class="suffix">%</span></div></div>
+        <div class="setting"><label for="examPassPercent">Exam minimum</label><div class="input-wrap"><input id="examPassPercent" type="number" min="0" max="100" value="35" inputmode="decimal"><span class="suffix">%</span></div></div>
+      </div>
+    </section>
+
+    <div class="section-heading">
+      <div><h2>Build your prediction</h2><p>Add each subject and enter your marks or estimates.</p></div>
+    </div>
+
+    <div class="workspace">
+      <section class="panel subject-panel" aria-labelledby="subjects-title">
+        <div class="panel-title">
+          <div><h3 id="subjects-title">Your subjects</h3><p>Use the expected exam marks you realistically think you can score.</p></div>
+          <span class="count" id="subjectCount">3 subjects</span>
+        </div>
+        <div class="message" id="message" role="alert"></div>
+        <div class="subject-list" id="subjectList">
+          <!-- Editable subjects are created by JavaScript. -->
+        </div>
+        <div class="actions">
+          <button class="btn btn-secondary" id="addSubject" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+            Add subject
+          </button>
+          <button class="btn btn-primary" id="predictBtn" type="button">
+            Predict my result
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </button>
+          <button class="btn btn-plain" id="resetBtn" type="button">Reset</button>
+        </div>
+        <div class="hint">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 11v5M12 7h.01"/></svg>
+          <span><strong>Important:</strong> The default rules are examples. Some universities require separate passing marks in internal and external exams or use different grade scales. Update the settings to match your rules.</span>
+        </div>
+      </section>
+
+      <aside class="panel results-panel" aria-labelledby="results-title">
+        <div class="panel-title">
+          <div><h3 id="results-title">Prediction summary</h3><p>Your estimate appears here.</p></div>
+          <span class="count" aria-hidden="true">↗</span>
+        </div>
+        <div class="results-placeholder" id="resultsPlaceholder">
+          <div class="placeholder-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5"/><path d="M4 19h16"/><path d="m7 15 4-4 3 2 5-7"/><path d="M15 6h4v4"/></svg></div>
+          <h4>Ready when you are</h4>
+          <p>Fill in your marks and select “Predict my result” to see your estimate.</p>
+        </div>
+        <div class="results-content" id="resultsContent" hidden>
+          <div class="overall">
+            <div class="overall-top">
+              <div>
+                <div class="small-label">Predicted percentage</div>
+                <div class="percentage" id="overallPercent">—%</div>
+                <div class="total-line" id="overallTotal">— / — marks</div>
+              </div>
+              <span class="status-pill caution" id="overallStatus">Estimate</span>
+            </div>
+          </div>
+          <div class="metrics">
+            <div class="metric"><div class="metric-label">Subjects entered</div><div class="metric-value" id="subjectMetric">—</div><div class="metric-sub">included in estimate</div></div>
+            <div class="metric"><div class="metric-label">Predicted pass</div><div class="metric-value" id="passMetric">— / —</div><div class="metric-sub">based on your rules</div></div>
+          </div>
+          <div class="grade-strip"><span class="label">Estimated grade</span><span class="grade" id="gradeValue">—</span></div>
+          <div class="breakdown">
+            <h4>Subject-wise breakdown</h4>
+            <div id="subjectResults"></div>
+          </div>
+          <div class="result-actions">
+            <button type="button" class="btn btn-secondary" id="exportBtn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M5 17v4h14v-4"/></svg>
+              Export CSV
+            </button>
+            <button type="button" class="btn btn-secondary" id="printBtn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v7H6z"/></svg>
+              Print
+            </button>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <footer class="footer">
+      <span><strong>GradePilot</strong> · A simple study-planning tool</span>
+      <span class="privacy">No account · No analytics · No server required</span>
+    </footer>
+  </main>
+
+  <script>
+    (() => {
+      'use strict';
+
+      const $ = (selector, root = document) => root.querySelector(selector);
+      const subjectList = $('#subjectList');
+      const subjectCount = $('#subjectCount');
+      const message = $('#message');
+      const resultsPlaceholder = $('#resultsPlaceholder');
+      const resultsContent = $('#resultsContent');
+      let nextId = 1;
+      let lastResults = null;
+
+      const icons = {
+        trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v5M14 11v5"/></svg>'
+      };
+
+      function settings() {
+        const internalMax = Number($('#internalMax').value);
+        const examMax = Number($('#examMax').value);
+        const passPercent = Number($('#passPercent').value);
+        const examPassPercent = Number($('#examPassPercent').value);
+        if (![internalMax, examMax, passPercent, examPassPercent].every(Number.isFinite) || internalMax <= 0 || examMax <= 0 || internalMax > 1000 || examMax > 1000 || passPercent < 0 || passPercent > 100 || examPassPercent < 0 || examPassPercent > 100) {
+          throw new Error('Please enter valid exam rules. Maximum marks must be greater than zero, and pass percentages must be between 0 and 100.');
+        }
+        return { internalMax, examMax, totalMax: internalMax + examMax, passPercent, examPassPercent };
+      }
+
+      function showMessage(text) {
+        message.textContent = text;
+        message.classList.add('show');
+      }
+      function clearMessage() {
+        message.textContent = '';
+        message.classList.remove('show');
+      }
+
+      function updateCount() {
+        const count = subjectList.querySelectorAll('.subject-row').length;
+        subjectCount.textContent = `${count} subject${count === 1 ? '' : 's'}`;
+      }
+
+      function addSubject(name = '', internal = '', exam = '') {
+        const id = nextId++;
+        const row = document.createElement('div');
+        row.className = 'subject-row';
+        row.dataset.id = String(id);
+        row.innerHTML = `
+          <div class="field">
+            <label for="subject-name-${id}">Subject name</label>
+            <input id="subject-name-${id}" class="subject-name" type="text" maxlength="70" placeholder="e.g. Mathematics" value="">
+          </div>
+          <div class="field">
+            <label for="subject-internal-${id}">Internal <span class="internal-cap">(/20)</span></label>
+            <input id="subject-internal-${id}" class="subject-internal" type="number" min="0" step="0.01" inputmode="decimal" placeholder="Marks">
+          </div>
+          <div class="field">
+            <label for="subject-exam-${id}">Expected exam <span class="exam-cap">(/80)</span></label>
+            <input id="subject-exam-${id}" class="subject-exam" type="number" min="0" step="0.01" inputmode="decimal" placeholder="Marks">
+          </div>
+          <button type="button" class="remove-btn" aria-label="Remove subject" title="Remove subject">${icons.trash}</button>
+        `;
+        $('.subject-name', row).value = name;
+        $('.subject-internal', row).value = internal;
+        $('.subject-exam', row).value = exam;
+        $('.remove-btn', row).addEventListener('click', () => {
+          row.remove();
+          updateCount();
+          clearMessage();
+        });
+        row.querySelectorAll('input').forEach(input => input.addEventListener('input', clearMessage));
+        subjectList.appendChild(row);
+        updateCount();
+        updateMarkCaps();
+      }
+
+      function updateMarkCaps() {
+        const im = Number($('#internalMax').value);
+        const em = Number($('#examMax').value);
+        document.querySelectorAll('.internal-cap').forEach(el => el.textContent = `(/${Number.isFinite(im) && im > 0 ? im : '—'})`);
+        document.querySelectorAll('.exam-cap').forEach(el => el.textContent = `(/${Number.isFinite(em) && em > 0 ? em : '—'})`);
+        document.querySelectorAll('.subject-internal').forEach(el => el.max = Number.isFinite(im) && im > 0 ? im : 1000);
+        document.querySelectorAll('.subject-exam').forEach(el => el.max = Number.isFinite(em) && em > 0 ? em : 1000);
+      }
+
+      function gradeFor(percent) {
+        if (percent >= 90) return 'A+';
+        if (percent >= 80) return 'A';
+        if (percent >= 70) return 'B+';
+        if (percent >= 60) return 'B';
+        if (percent >= 50) return 'C';
+        if (percent >= 40) return 'D';
+        return 'F';
+      }
+
+      function formatNumber(number) {
+        return Number(number).toLocaleString(undefined, { maximumFractionDigits: 2 });
+      }
+
+      function predict() {
+        clearMessage();
+        let rule;
+        try { rule = settings(); }
+        catch (error) { showMessage(error.message); return; }
+
+        const rows = Array.from(subjectList.querySelectorAll('.subject-row'));
+        if (!rows.length) { showMessage('Add at least one subject before predicting your result.'); return; }
+        const results = [];
+        const skipped = [];
+        for (const [index, row] of rows.entries()) {
+          const name = $('.subject-name', row).value.trim() || `Subject ${index + 1}`;
+          const internalRaw = $('.subject-internal', row).value.trim();
+          const examRaw = $('.subject-exam', row).value.trim();
+          if (internalRaw === '' || examRaw === '') {
+            skipped.push(name);
+            continue;
+          }
+          const internal = Number(internalRaw);
+          const exam = Number(examRaw);
+          if (!Number.isFinite(internal) || !Number.isFinite(exam) || internal < 0 || exam < 0 || internal > rule.internalMax || exam > rule.examMax) {
+            showMessage(`Check marks for “${name}”. Internal marks must be 0–${rule.internalMax} and exam marks must be 0–${rule.examMax}.`);
+            row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+          }
+          const total = internal + exam;
+          const percent = total / rule.totalMax * 100;
+          const examPercent = exam / rule.examMax * 100;
+          const pass = percent >= rule.passPercent && examPercent >= rule.examPassPercent;
+          results.push({ name, internal, exam, total, percent, examPercent, pass, totalMax: rule.totalMax });
+        }
+        if (!results.length) {
+          showMessage('Enter both internal and expected exam marks for at least one subject.');
+          return;
+        }
+        if (skipped.length) {
+          showMessage(`${skipped.length} incomplete subject${skipped.length === 1 ? ' was' : 's were'} skipped. Enter both marks to include ${skipped.length === 1 ? 'it' : 'them'} in the prediction.`);
+        }
+
+        const obtained = results.reduce((sum, item) => sum + item.total, 0);
+        const maximum = results.length * rule.totalMax;
+        const overallPercent = obtained / maximum * 100;
+        const passes = results.filter(item => item.pass).length;
+        const allPass = passes === results.length;
+
+        $('#overallPercent').textContent = `${formatNumber(overallPercent)}%`;
+        $('#overallTotal').textContent = `${formatNumber(obtained)} / ${formatNumber(maximum)} marks`;
+        $('#subjectMetric').textContent = String(results.length);
+        $('#passMetric').textContent = `${passes} / ${results.length}`;
+        $('#gradeValue').textContent = gradeFor(overallPercent);
+
+        const overallStatus = $('#overallStatus');
+        overallStatus.className = 'status-pill ' + (allPass ? 'pass' : passes === 0 ? 'fail' : 'caution');
+        overallStatus.textContent = allPass ? 'Likely pass' : passes === 0 ? 'At risk' : 'Review subjects';
+
+        const output = $('#subjectResults');
+        output.replaceChildren();
+        results.forEach(item => {
+          const entry = document.createElement('div');
+          entry.className = 'subject-result';
+          const tone = item.pass ? '' : item.percent < rule.passPercent ? 'fail' : 'risk';
+          const statusText = item.pass ? 'Likely pass' : item.percent < rule.passPercent ? 'Below overall pass mark' : 'External exam below minimum';
+          entry.innerHTML = `
+            <div class="subject-result-top"><span class="subject-result-name"></span><span class="subject-result-score">${formatNumber(item.total)} / ${formatNumber(item.totalMax)}</span></div>
+            <div class="track" aria-label="${formatNumber(item.percent)} percent"><div class="track-fill ${tone}" style="width:${Math.max(0, Math.min(100, item.percent))}%"></div></div>
+            <div class="subject-result-foot"><span>${formatNumber(item.percent)}% · ${item.pass ? gradeFor(item.percent) : 'Needs attention'}</span><span>${statusText}</span></div>
+          `;
+          $('.subject-result-name', entry).textContent = item.name;
+          output.appendChild(entry);
+        });
+
+        resultsPlaceholder.hidden = true;
+        resultsContent.hidden = false;
+        lastResults = { results, obtained, maximum, overallPercent, grade: gradeFor(overallPercent), passes, allPass, rule };
+      }
+
+      function csvEscape(value) {
+        const text = String(value ?? '');
+        return /[",\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
+      }
+
+      function exportCsv() {
+        if (!lastResults) { showMessage('Predict your result before exporting.'); return; }
+        const { results, obtained, maximum, overallPercent, grade, passes, rule } = lastResults;
+        const rows = [
+          ['Exam Result Prediction — Estimate'],
+          ['Internal maximum', rule.internalMax],
+          ['Exam maximum', rule.examMax],
+          ['Overall pass mark (%)', rule.passPercent],
+          ['Exam minimum (%)', rule.examPassPercent],
+          [],
+          ['Subject', 'Internal marks', 'Expected exam marks', 'Predicted total', 'Maximum total', 'Percentage', 'Estimated grade', 'Predicted status']
+        ];
+        results.forEach(item => rows.push([item.name, item.internal, item.exam, item.total, item.totalMax, `${formatNumber(item.percent)}%`, gradeFor(item.percent), item.pass ? 'Likely pass' : 'Needs attention']));
+        rows.push([], ['Overall', '', '', formatNumber(obtained), formatNumber(maximum), `${formatNumber(overallPercent)}%`, grade, `${passes}/${results.length} subjects likely to pass`]);
+        const csv = '\uFEFF' + rows.map(row => row.map(csvEscape).join(',')).join('\r\n');
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'exam-result-prediction.csv';
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+      }
+
+      function reset() {
+        $('#internalMax').value = 20;
+        $('#examMax').value = 80;
+        $('#passPercent').value = 40;
+        $('#examPassPercent').value = 35;
+        subjectList.replaceChildren();
+        nextId = 1;
+        addSubject('Mathematics');
+        addSubject('Operating Systems');
+        addSubject('Computer Networks');
+        clearMessage();
+        resultsPlaceholder.hidden = false;
+        resultsContent.hidden = true;
+        lastResults = null;
+        updateMarkCaps();
+      }
+
+      $('#addSubject').addEventListener('click', () => {
+        if (subjectList.querySelectorAll('.subject-row').length >= 30) {
+          showMessage('You can add up to 30 subjects.');
+          return;
+        }
+        addSubject();
+        clearMessage();
+        const inputs = subjectList.lastElementChild.querySelector('.subject-name');
+        inputs.focus();
+      });
+      $('#predictBtn').addEventListener('click', predict);
+      $('#resetBtn').addEventListener('click', reset);
+      $('#exportBtn').addEventListener('click', exportCsv);
+      $('#printBtn').addEventListener('click', () => window.print());
+      ['internalMax', 'examMax'].forEach(id => $('#' + id).addEventListener('input', updateMarkCaps));
+      ['internalMax', 'examMax', 'passPercent', 'examPassPercent'].forEach(id => $('#' + id).addEventListener('input', clearMessage));
+
+      reset();
+    })();
+  </script>
+</body>
+</html>
