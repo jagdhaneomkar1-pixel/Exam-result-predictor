@@ -26,3 +26,5 @@ This is a demo/educational estimate, not an official exam result and not a guara
 - CSS
 - JavaScript
 -
+## License
+This project is licensed under the [GNU GPL v3.0](LICENSE).
