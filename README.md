@@ -1,6 +1,6 @@
 # Exam Result Predictor
 
-#live website
+live link :
 -(https://jagdhaneomkar1-pixel.github.io/Exam-result-predictor/)
 
 ## Technologies Used
@@ -9,5 +9,5 @@
 - JavaScript
 -
 
-## ML mini project licence 
+##mini-project for ML
 This project is licensed under the [GNU GPL v3.0](LICENSE).
