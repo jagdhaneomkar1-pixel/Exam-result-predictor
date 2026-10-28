@@ -18,3 +18,11 @@ A responsive, static website built with HTML, CSS, and JavaScript. It estimates 
 
 ## Important
 This is a demo/educational estimate, not an official exam result and not a guarantee of marks. All calculations run in the browser; no student data is sent to a server.
+## Live Website
+[Open Exam Result Predictor](https://jagdhaneomkar1-pixel.github.io/Exam-result-predictor/)
+
+## Technologies Used
+- HTML
+- CSS
+- JavaScript
+-
