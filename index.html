@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Estimate your exam result using marks, attendance, and preparation level.">
+  <title>Exam Result Predictor</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="brand-mark" aria-hidden="true">ER</div>
+    <div>
+      <p class="eyebrow">STUDENT TOOLKIT</p>
+      <h1>Exam Result Predictor</h1>
+      <p class="subtitle">A simple estimate to help you plan your next study session.</p>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="intro-card">
+      <div>
+        <p class="eyebrow">YOUR PROGRESS, MADE CLEAR</p>
+        <h2>Check your estimated result</h2>
+        <p>Enter your current performance and preparation details. You’ll get an approximate score range and practical next steps.</p>
+      </div>
+      <div class="decorative-icon" aria-hidden="true">✦</div>
+    </section>
+
+    <div class="content-grid">
+      <section class="panel">
+        <h2>Student details</h2>
+        <form id="predictor-form">
+          <label for="student-name">Student name <span class="optional">(optional)</span></label>
+          <input id="student-name" name="studentName" type="text" placeholder="Enter your name" maxlength="60">
+
+          <div class="form-row">
+            <div>
+              <label for="total-marks">Total marks</label>
+              <input id="total-marks" name="totalMarks" type="number" min="1" max="1000" value="100" required>
+            </div>
+            <div>
+              <label for="obtained-marks">Marks obtained so far</label>
+              <input id="obtained-marks" name="obtainedMarks" type="number" min="0" max="1000" value="70" required>
+            </div>
+          </div>
+
+          <label for="attendance">Attendance</label>
+          <div class="range-wrap">
+            <input id="attendance" name="attendance" type="range" min="0" max="100" value="85">
+            <output id="attendance-value" for="attendance">85%</output>
+          </div>
+
+          <label for="preparation">Preparation level</label>
+          <select id="preparation" name="preparation">
+            <option value="0.75">Needs improvement</option>
+            <option value="0.9" selected>Good</option>
+            <option value="1">Very well prepared</option>
+          </select>
+
+          <label for="study-hours">Daily study time</label>
+          <select id="study-hours" name="studyHours">
+            <option value="0.85">Less than 1 hour</option>
+            <option value="0.93" selected>1–3 hours</option>
+            <option value="1">More than 3 hours</option>
+          </select>
+
+          <button type="submit" class="primary-button">Predict my result <span aria-hidden="true">→</span></button>
+          <p class="form-note">This is an educational estimate, not an official result or guarantee.</p>
+        </form>
+      </section>
+
+      <section class="panel result-panel" id="result-panel" aria-live="polite">
+        <div class="result-placeholder" id="result-placeholder">
+          <div class="placeholder-icon" aria-hidden="true">◎</div>
+          <h2>Your estimate appears here</h2>
+          <p>Fill in the details and select <strong>Predict my result</strong> to view your estimated score and study tips.</p>
+        </div>
+        <div id="result-content" hidden>
+          <p class="eyebrow">YOUR ESTIMATE</p>
+          <h2 id="greeting">Your predicted result</h2>
+          <div class="score-card">
+            <div>
+              <p class="score-label">Estimated score</p>
+              <p class="score-number"><span id="score-low">0</span>–<span id="score-high">0</span><span class="score-total"> / <span id="score-total">100</span></span></p>
+            </div>
+            <div class="grade-badge" id="grade-badge">B</div>
+          </div>
+          <div class="progress-track"><div class="progress-bar" id="progress-bar"></div></div>
+          <p class="result-summary" id="result-summary"></p>
+          <h3>Recommended next steps</h3>
+          <ul id="tips-list" class="tips-list"></ul>
+          <button type="button" id="reset-button" class="secondary-button">Reset form</button>
+          <p class="form-note">Actual results depend on exam difficulty, marking rules, and your performance on exam day.</p>
+        </div>
+      </section>
+    </div>
+    <p class="footer-note">Made for learning • No data is uploaded or stored by this page.</p>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>
