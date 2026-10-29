@@ -1,7 +1,7 @@
 # Exam Result Predictor
 
 live link :
-https://jagdhaneomkar1-pixel.github.io/Exam-result-predictor/
+ https://jagdhaneomkar1-pixel.github.io/Exam-result-predictor/
 
 ## Technologies Used
 - HTML
