@@ -1,7 +1,7 @@
 # Exam Result Predictor
 
 live link :
-C:/Users/jagdh/Downloads/exam-result-predictor%20(2).html
+
 
 ## Technologies Used
 - HTML
